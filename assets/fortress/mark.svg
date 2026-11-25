@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Fortress mark: crenellated wall with two towers and an arched gate -->
+  <path fill="currentColor" fill-rule="evenodd" d="
+    M14 86 V30 h9 v7 h6 v-7 h9 v20 h5 v-7 h7 v7 h7 v-7 h7 v7 h5 V30 h9 v7 h6 v-7 h9 V86 Z
+    M42 86 V71 a8 8 0 0 1 16 0 V86 Z"/>
+</svg>

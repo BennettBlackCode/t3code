@@ -8,7 +8,7 @@ NODE_BIN="$HOME/.t3fork/node-v26.13.1-darwin-arm64/bin"
 export PATH="$NODE_BIN:$PATH"
 cd "$(dirname "$0")"
 
-APP_NAME="T3 Code (Beta).app"
+APP_NAME="Fortress.app"
 DEST="/Applications/$APP_NAME"
 
 if [[ "${1:-}" == "--pull" ]]; then
@@ -29,7 +29,7 @@ if grep -rqE "phc_XOWci4oZ|ingest\.t3\.codes|api\.axiom\.co" "$BUILT/Contents/Re
   echo "!! tracking endpoint found in the build. Not installing."; exit 1
 fi
 
-osascript -e "tell application \"$APP_NAME\" to quit" >/dev/null 2>&1 || true
+osascript -e "tell application \"Fortress\" to quit" >/dev/null 2>&1 || true
 sleep 2
 rm -rf "$DEST"
 ditto "$BUILT" "$DEST"
