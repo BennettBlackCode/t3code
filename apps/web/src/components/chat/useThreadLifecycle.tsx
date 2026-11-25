@@ -85,6 +85,7 @@ import { environmentThreadDetails } from "../../state/threads";
 import { type SideThreadOpenIntent, sideThreadKindOf } from "@t3tools/client-runtime/side-thread";
 import { openSideThread, resolveThreadOpenRoute } from "../../lib/sideChatPane";
 import type { useLocalDispatchState } from "./useLocalDispatchState";
+import { RENAME_ACTIVE_THREAD_EVENT } from "../../lib/renameActiveThreadEvent";
 const RELATED_THREAD_SHELL_WAIT_MS = 1_000;
 
 function actionErrorMessage(error: unknown): string {
@@ -736,6 +737,11 @@ export function useThreadLifecycle(input: ThreadLifecycleInput) {
           activeThreadPinned ? m(msg("Failed to unpin thread")) : m(msg("Failed to pin thread")),
         ),
       );
+    },
+    "thread.rename": () => {
+      if (!activeThreadShell || !activeThreadRef || !serverConfigLoaded) return false;
+      // ChatHeader owns the inline rename field; it listens for this event.
+      window.dispatchEvent(new CustomEvent(RENAME_ACTIVE_THREAD_EVENT));
     },
     "thread.regenerateTitle": () => {
       if (!readEnvironmentScope(environmentId, AuthOrchestrationOperateScope)) return false;

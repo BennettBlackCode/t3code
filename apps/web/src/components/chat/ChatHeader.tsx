@@ -45,6 +45,7 @@ import { textDirection } from "~/textDirection";
 import { useClientSettings } from "../../hooks/useSettings";
 import { GuestShareIndicator } from "./GuestShareControls";
 import { SharedTooltipTrigger } from "../ui/shared-tooltip";
+import { RENAME_ACTIVE_THREAD_EVENT } from "../../lib/renameActiveThreadEvent";
 
 interface ChatHeaderProps {
   activeThreadEnvironmentId: EnvironmentId;
@@ -174,6 +175,14 @@ export const ChatHeader = memo(function ChatHeader({
       title: activeThreadTitle,
     });
   };
+  const startRenameRef = useRef(startRename);
+  startRenameRef.current = startRename;
+  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- subscribes to the Cmd+T rename shortcut event
+  useEffect(() => {
+    const onRename = () => startRenameRef.current();
+    window.addEventListener(RENAME_ACTIVE_THREAD_EVENT, onRename);
+    return () => window.removeEventListener(RENAME_ACTIVE_THREAD_EVENT, onRename);
+  }, []);
   const commitRename = (title: string) => {
     setRenaming(null);
     if (!readEnvironmentScope(activeThreadEnvironmentId, AuthOrchestrationOperateScope)) return;

@@ -3507,15 +3507,12 @@ export default function Sidebar({ routeReveal }: { routeReveal: SidebarRouteReve
                       const threadKey = scopedThreadKey(
                         scopeThreadRef(thread.environmentId, thread.id),
                       );
-                      const isCard =
-                        section === "active" || section === "pinned" || section === "working";
+                      // Fork: every top-level thread is a compact one-line row (no cards).
                       const rowVariant = folderRow
                         ? folderRowsMultiline
                           ? "folder-multiline"
                           : "folder"
-                        : isCard
-                          ? "card"
-                          : "slim";
+                        : "slim";
                       return (
                         <SortableThreadRow
                           key={threadKey}

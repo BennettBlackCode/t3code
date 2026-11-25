@@ -153,6 +153,8 @@ export const DEFAULT_KEYBINDINGS: ReadonlyArray<KeybindingRule> = [
   { key: "mod+shift+2", command: "usage.period.week", when: "usagePageOpen" },
   { key: "mod+shift+3", command: "usage.period.month", when: "usagePageOpen" },
   { key: "mod+shift+4", command: "usage.period.quarter", when: "usagePageOpen" },
+  // Fork: Cmd+T renames the open thread (listed last so it wins over rightPanel.new).
+  { key: "mod+t", command: "thread.rename", when: "!terminalFocus" },
 ];
 
 function normalizeKeyToken(token: string): string {

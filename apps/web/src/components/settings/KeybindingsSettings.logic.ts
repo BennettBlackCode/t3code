@@ -512,6 +512,7 @@ const COMMAND_LABELS: Partial<Record<KeybindingCommand, string>> = {
   "thread.settle": msg("Thread: Settle"),
   "thread.pin": msg("Thread: Pin"),
   "thread.regenerateTitle": msg("Thread: Regenerate Title"),
+  "thread.rename": msg("Thread: Rename"),
   "thread.undo": msg("Thread: Undo"),
 };
 

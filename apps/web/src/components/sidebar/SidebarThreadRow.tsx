@@ -227,6 +227,26 @@ function terminalProcessLabel(count: number, resolve: MessageResolver): string {
   );
 }
 
+/** Fork: the thread's current provider icon alone (Claude, Codex, OpenCode...). */
+function SidebarProviderIcon(props: {
+  thread: SidebarThreadSummary;
+  providerEntryByInstanceId: ReadonlyMap<string, SidebarProviderEntry>;
+}) {
+  const stack = resolveThreadProviderStack(props.thread);
+  const entry = props.providerEntryByInstanceId.get(stack[stack.length - 1]!) ?? null;
+  if (entry === null) return null;
+  return (
+    <ProviderInstanceIcon
+      driverKind={entry.driverKind}
+      displayName={entry.displayName}
+      accentColor={entry.accentColor}
+      acpRegistryAgentId={entry.acpRegistryAgentId}
+      acpRegistryIconUrl={entry.acpRegistryIconUrl}
+      iconClassName="size-3.5"
+    />
+  );
+}
+
 function SidebarProviderStack(props: {
   thread: SidebarThreadSummary;
   providerEntryByInstanceId: ReadonlyMap<string, SidebarProviderEntry>;
@@ -497,8 +517,7 @@ type SortableThreadRowBag = Pick<
   "listeners" | "setNodeRef" | "transform" | "transition" | "isDragging"
 >;
 
-export const draftSurfaceClassName = "bg-warning/4 hover:bg-warning/8";
-export const draftPenClassName = "size-3 shrink-0 text-warning-foreground";
+const draftPenClassName = "size-3 shrink-0 text-warning-foreground";
 
 // useSortable memoizes on its `disabled` object, so a fresh one per render
 // re-renders every row and marker on each sidebar update.
@@ -1050,11 +1069,9 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
       ? "bg-sidebar-row-active text-sidebar-foreground light:ring-1 light:ring-inset light:ring-sidebar-border/70"
       : isSelected || props.sweepAction !== null
         ? "bg-sidebar-row-selected text-sidebar-foreground light:ring-1 light:ring-inset light:ring-sidebar-border/70"
-        : hasUnsentDraft
-          ? cn(draftSurfaceClassName, "text-sidebar-foreground")
-          : shouldRecede
-            ? "text-sidebar-muted-foreground/75 hover:bg-sidebar-row-hover hover:text-sidebar-foreground"
-            : "bg-transparent text-sidebar-foreground hover:bg-sidebar-row-hover",
+        : shouldRecede
+          ? "text-sidebar-muted-foreground/75 hover:bg-sidebar-row-hover hover:text-sidebar-foreground"
+          : "bg-transparent text-sidebar-foreground hover:bg-sidebar-row-hover",
     shouldRecede &&
       (status === "preparing" || status === "working") &&
       "opacity-70 transition-opacity hover:opacity-100 focus-within:opacity-100 motion-reduce:transition-none",
@@ -1335,7 +1352,7 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
         {...sortableRootProps}
         {...(fileDropHandlers ?? {})}
         className={cn(
-          "list-none [content-visibility:auto] [contain-intrinsic-size:auto_--spacing(9)]",
+          "list-none [content-visibility:auto] [contain-intrinsic-size:auto_--spacing(8)]",
           metaLine !== null && multiline && "[contain-intrinsic-size:auto_--spacing(13.5)]",
           sortable?.isDragging && "relative z-20",
         )}
@@ -1358,7 +1375,7 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
                 rowSurfaceClassName,
                 multiline
                   ? "flex flex-col justify-center px-2.5 py-1.5"
-                  : "flex h-9 items-center gap-2.5 px-2.5",
+                  : "flex h-8 items-center gap-2 px-2.5",
                 // Lines titles up with the folder name, past its chevron and icon.
                 inFolder && "ps-9",
               )}
@@ -1379,15 +1396,15 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
                 className={cn(
                   "flex shrink-0 items-center transition-opacity",
                   (!props.isActive || variantAction === "unsettle") &&
-                    "opacity-40 grayscale group-focus-within/sidebar-row:opacity-100 group-focus-within/sidebar-row:grayscale-0 group-hover/sidebar-row:opacity-100 group-hover/sidebar-row:grayscale-0",
+                    "opacity-70 group-focus-within/sidebar-row:opacity-100 group-hover/sidebar-row:opacity-100",
                 )}
               >
-                {props.project ? (
-                  <ProjectFavicon project={props.project} className="size-4" />
-                ) : null}
+                <SidebarProviderIcon
+                  thread={thread}
+                  providerEntryByInstanceId={props.providerEntryByInstanceId}
+                />
               </span>
             )}
-            {draftIndicator}
             {title}
             {multiline ? titleLineIcons : null}
             {pinIndicator}
@@ -1445,8 +1462,8 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
                         </>
                       }
                     />
-                  ) : inFolder && topStatus ? (
-                    // Folder rows have no status line, so the status takes the time slot.
+                  ) : topStatus ? (
+                    // One-line rows have no status line, so the status takes the time slot.
                     <span
                       className={cn(
                         "inline-flex items-center gap-1 text-xs font-medium",
