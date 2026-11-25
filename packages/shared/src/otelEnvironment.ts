@@ -346,7 +346,11 @@ export const isCiEnvironment = (env: Readonly<Record<string, string | undefined>
 export const isDoNotTrackSet = (env: Readonly<Record<string, string | undefined>>) =>
   T3CODE_TRUE.includes(env.DO_NOT_TRACK?.trim().toLowerCase() ?? "");
 
-export const isRelayTracingEnabled = (env: Readonly<Record<string, string | undefined>>) =>
+// Fork: relay tracing (Axiom) is hard-disabled.
+export const isRelayTracingEnabled = (
+  _env: Readonly<Record<string, string | undefined>>,
+): boolean => false;
+const _upstreamIsRelayTracingEnabled = (env: Readonly<Record<string, string | undefined>>) =>
   Config.all({
     ...sdkFlags,
     telemetry: flag("T3CODE_TELEMETRY_ENABLED", T3CODE_TRUE, T3CODE_FALSE, String),

@@ -52,9 +52,7 @@ export function resolveCloudPublicConfig(): CloudPublicConfig {
       (import.meta.env.VITE_T3CODE_RELAY_URL as string | undefined) ?? "",
     ),
     relayTracing: {
-      tracesUrl: normalizeSecureUrl(
-        (import.meta.env.VITE_RELAY_OTLP_TRACES_URL as string | undefined) ?? "",
-      ),
+      tracesUrl: normalizeSecureUrl("" /* fork: relay tracing disabled */),
       tracesDataset: trimNonEmpty(
         import.meta.env.VITE_RELAY_OTLP_TRACES_DATASET as string | undefined,
       ),
