@@ -3,8 +3,8 @@ import { T, useGT } from "gt-react";
 import { ExternalLinkIcon, InboxIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { readDesktopPrimaryBearerToken } from "~/environments/primary/desktopAuth";
-import { resolvePrimaryEnvironmentHttpUrl } from "~/environments/primary/target";
+import { fetchFortress } from "~/lib/fortressApi";
+import { useStableCallback } from "~/hooks/useStableCallback";
 import { cn } from "~/lib/utils";
 import { Dialog, DialogHeader, DialogPopup, DialogTitle } from "../ui/dialog";
 
@@ -39,15 +39,6 @@ interface TicketMessage {
   readonly attachments: ReadonlyArray<string>;
 }
 
-async function fetchFortress<A>(path: string, params?: Record<string, string>): Promise<A> {
-  const token = await readDesktopPrimaryBearerToken();
-  const res = await fetch(resolvePrimaryEnvironmentHttpUrl(path, params), {
-    headers: token ? { authorization: `Bearer ${token}` } : {},
-    credentials: token ? "omit" : "include",
-  });
-  return (await res.json()) as A;
-}
-
 const formatTime = (seconds: number) =>
   new Date(seconds * 1000).toLocaleString(undefined, {
     month: "short",
@@ -58,11 +49,12 @@ const formatTime = (seconds: number) =>
 
 function useTickets() {
   const [data, setData] = useState<TicketList | null>(null);
-  const refresh = () => {
+  const refresh = useStableCallback(() => {
     fetchFortress<TicketList>("/api/fortress/tickets")
       .then(setData)
       .catch(() => undefined);
-  };
+  });
+
   // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- polling timer + window focus listener that keep the ticket count in step with Chatwoot.
   useEffect(() => {
     refresh();
